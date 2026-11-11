@@ -13,24 +13,41 @@ Records whatever your computer plays during an online meeting (Interactio, Zoom,
 
 ## Install
 
-Requires Python 3.9 or newer.
+You only need to do this once per computer.
 
-```
-pip install git+https://github.com/BurkeUgur/meeting-scribe.git
-```
+1. **Install Python 3.9 or newer** from [python.org/downloads](https://www.python.org/downloads/). On the first screen of the installer, **tick "Add python.exe to PATH"** before clicking *Install Now*. Without it, the commands below won't be found.
+2. **Install meeting-scribe.** Open PowerShell (Start menu → type "PowerShell") and run:
 
-Models download automatically on first use: `small.en` for the main language (~500 MB) and `large-v3` for Arabic/French (~3 GB).
+   ```
+   pip install https://github.com/BurkeUgur/meeting-scribe/archive/refs/heads/main.zip
+   ```
+
+   This doesn't need Git. If you already have Git, `pip install git+https://github.com/BurkeUgur/meeting-scribe.git` works too.
+
+The first time you transcribe, the speech models download automatically, so you need an internet connection: `small.en` for the main language (~500 MB) and `large-v3` for Arabic/French (~3 GB). Leave out the second one with `--extra-langs ""`.
+
+To update to the latest version later, run the same `pip install` command with `--upgrade` added.
 
 ## Usage
 
+Open the meeting and make sure you can hear it through your speakers or headphones. Then, in PowerShell:
+
 ```
-scribe devices     # list audio outputs and show which one is playing sound
-scribe start       # start recording and transcription in the background
-scribe status      # show progress and the last lines of the transcript
-scribe stop        # stop recording; transcription finishes the remaining chunks and exits
+scribe devices                                   # one output should show AUDIO
+scribe start --dir "C:\Meetings\2026-11-12"      # start recording and transcription
+scribe status --dir "C:\Meetings\2026-11-12"     # check progress during the meeting
+scribe stop --dir "C:\Meetings\2026-11-12"       # when the meeting is over
 ```
 
-Run `scribe start` before the meeting begins. Silent stretches aren't saved, so starting early costs nothing. Recordings go to `recordings/<date>/` by default.
+- If `scribe devices` shows every output as `silent`, the meeting audio isn't playing on this computer (muted tab, wrong device, or the volume is off).
+- After `scribe start` you can close PowerShell. Recording and transcription keep running in the background.
+- Start before the meeting begins. Silent stretches aren't saved, so starting early costs nothing.
+- Without `--dir`, recordings go to `recordings\<date>\` under the folder PowerShell was opened in.
+- The transcript is in `transcript.txt` in that folder, and it grows as the meeting goes on.
+
+**"scribe is not recognized"?** Python's scripts folder isn't on your PATH. Use `python -m meeting_scribe` instead of `scribe`, e.g. `python -m meeting_scribe start --dir ...`.
+
+**Transcript lagging behind?** Transcription runs on the CPU. On an older laptop it can trail the meeting by a few minutes, and the Arabic/French pass adds load. Use `--extra-langs ""` if you don't need it.
 
 Common options for `scribe start`:
 

@@ -13,24 +13,41 @@ Online toplantıların (Interactio, Zoom, Teams, Webex vb.) sesini **bilgisayar�
 
 ## Kurulum
 
-Python 3.9 veya üstü gerekir.
+Her bilgisayarda yalnızca bir kez yapılır.
 
-```
-pip install git+https://github.com/BurkeUgur/meeting-scribe.git
-```
+1. **Python 3.9 veya üstünü kurun:** [python.org/downloads](https://www.python.org/downloads/) adresinden indirin. Kurulumun ilk ekranında *Install Now*'a basmadan önce **"Add python.exe to PATH" kutusunu işaretleyin**. İşaretlenmezse aşağıdaki komutlar bulunamaz.
+2. **meeting-scribe'ı kurun:** PowerShell'i açın (Başlat menüsüne "PowerShell" yazın) ve şunu çalıştırın:
 
-Modeller ilk kullanımda otomatik indirilir: ana dil için `small.en` yaklaşık 500 MB, Arapça/Fransızca için `large-v3` yaklaşık 3 GB.
+   ```
+   pip install https://github.com/BurkeUgur/meeting-scribe/archive/refs/heads/main.zip
+   ```
+
+   Bu yöntem için Git gerekmez. Bilgisayarda Git varsa `pip install git+https://github.com/BurkeUgur/meeting-scribe.git` de çalışır.
+
+İlk yazıya dökmede konuşma modelleri otomatik iner, bu yüzden internet bağlantısı gerekir: ana dil için `small.en` yaklaşık 500 MB, Arapça/Fransızca için `large-v3` yaklaşık 3 GB. İkincisini istemiyorsanız `--extra-langs ""` ekleyin.
+
+Daha sonra en son sürüme güncellemek için aynı `pip install` komutunu sonuna `--upgrade` ekleyerek çalıştırın.
 
 ## Kullanım
 
+Toplantıyı açın ve sesin hoparlörden ya da kulaklıktan geldiğinden emin olun. Sonra PowerShell'de:
+
 ```
-scribe devices     # ses çıkışlarını listeler, hangisinden ses geldiğini ölçer
-scribe start       # kaydı ve yazıya dökmeyi arka planda başlatır
-scribe status      # ilerlemeyi ve transkriptin son satırlarını gösterir
-scribe stop        # kaydı bitirir; yazıya dökme kalanları tamamlayıp kapanır
+scribe devices                                     # bir çıkışta AUDIO yazmalı
+scribe start --dir "C:\Toplantilar\2026-11-12"     # kaydı ve yazıya dökmeyi başlatır
+scribe status --dir "C:\Toplantilar\2026-11-12"    # toplantı sırasında ilerlemeyi gösterir
+scribe stop --dir "C:\Toplantilar\2026-11-12"      # toplantı bitince
 ```
 
-Toplantı başlamadan önce `scribe start` demeniz yeterli; sessiz kısımlar kaydedilmediği için erken başlatmanın bir zararı yok. Kayıtlar varsayılan olarak `recordings/<tarih>/` klasörüne yazılır.
+- `scribe devices` tüm çıkışları `silent` gösteriyorsa toplantı sesi bu bilgisayardan çıkmıyor demektir. Sekme sessize alınmış, yanlış cihaz seçili ya da ses kapalı olabilir.
+- `scribe start` dedikten sonra PowerShell'i kapatabilirsiniz; kayıt ve yazıya dökme arka planda sürer.
+- Toplantı başlamadan önce başlatın. Sessiz kısımlar kaydedilmediği için erken başlatmanın bir zararı yok.
+- `--dir` vermezseniz kayıtlar PowerShell'in açıldığı klasörün altında `recordings\<tarih>\` içine yazılır.
+- Yazıya dökülen metin o klasördeki `transcript.txt` dosyasındadır ve toplantı ilerledikçe büyür.
+
+**"scribe is not recognized" hatası mı?** Python'un komut klasörü PATH'te değil demektir. `scribe` yerine `python -m meeting_scribe` yazın, örneğin `python -m meeting_scribe start --dir ...`
+
+**Metin toplantının gerisinde mi kalıyor?** Yazıya dökme işlemciyi kullanır. Eski bir dizüstünde metin toplantının birkaç dakika gerisinden gelebilir; Arapça/Fransızca dökümü de ek yük getirir. Gerekmiyorsa `--extra-langs ""` kullanın.
 
 `scribe start` için sık kullanılan seçenekler:
 
