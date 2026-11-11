@@ -7,6 +7,7 @@ name = "toplanti-takip"
 version = "0.1.0"
 description = "Online toplantıların sesini bilgisayardan kaydedip yazıya döker (Whisper)."
 readme = "README.md"
+license = { text = "MIT" }
 requires-python = ">=3.9"
 dependencies = [
     "faster-whisper>=1.0",

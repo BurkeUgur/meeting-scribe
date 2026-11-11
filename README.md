@@ -66,3 +66,7 @@ Gündem PDF'i varsa onu da verin. Konuşmacı adları ve oturum başlıkları b�
 - Aksanlı İngilizce bazen başka bir dil sanılabilir. Bu yüzden ikinci döküm yalnızca `--diger-diller` ile seçilen dilleri işler.
 - Bilgisayarın ses seviyesi kapalıysa ya da toplantı sekmesi sessize alınmışsa hiçbir şey kaydedilmez. `toplanti cihazlar` ile kontrol edin.
 - Toplantı kaydetmeden önce katılımcıların ve düzenleyicinin onayını almak sizin sorumluluğunuzdadır.
+
+## Lisans
+
+MIT. Ayrıntılar için [LICENSE](LICENSE) dosyasına bakın.
