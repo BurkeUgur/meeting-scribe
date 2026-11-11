@@ -1,0 +1,20 @@
+# Toplantı kayıtları ve transkriptler kişisel veridir; depoya girmesin
+kayitlar/
+*.wav
+*.wav.tmp
+transkript*.txt
+segmentler*.json
+islenen*.txt
+durum_*.txt
+*_log.txt
+*.pid
+baslangic.txt
+DUR
+KAYIT_BITTI
+notlar.md
+
+__pycache__/
+*.egg-info/
+build/
+dist/
+.venv/
