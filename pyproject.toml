@@ -3,9 +3,9 @@ requires = ["setuptools>=61"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "toplanti-takip"
-version = "0.1.0"
-description = "Online toplantıların sesini bilgisayardan kaydedip yazıya döker (Whisper)."
+name = "meeting-scribe"
+version = "0.2.0"
+description = "Record what your computer plays during an online meeting and transcribe it locally with Whisper."
 readme = "README.md"
 license = { text = "MIT" }
 requires-python = ">=3.9"
@@ -16,7 +16,7 @@ dependencies = [
 ]
 
 [project.scripts]
-toplanti = "toplanti_takip.cli:main"
+scribe = "meeting_scribe.cli:main"
 
 [tool.setuptools]
-packages = ["toplanti_takip"]
+packages = ["meeting_scribe"]

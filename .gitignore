@@ -1,16 +1,17 @@
-# Toplantı kayıtları ve transkriptler kişisel veridir; depoya girmesin
-kayitlar/
+# Recordings and transcripts are personal data; keep them out of the repo
+recordings/
 *.wav
 *.wav.tmp
-transkript*.txt
-segmentler*.json
-islenen*.txt
-durum_*.txt
+transcript*.txt
+segments*.json
+processed*.txt
+status_*.txt
 *_log.txt
 *.pid
-baslangic.txt
-DUR
-KAYIT_BITTI
+start_time.txt
+STOP
+FINISHED
+notes.md
 notlar.md
 
 __pycache__/

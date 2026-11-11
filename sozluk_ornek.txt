@@ -1,8 +1,0 @@
-# Toplantıda geçecek isim ve kısaltmalar (satır başına bir terim).
-# Yazıya dökme modeli bunları doğru yazmaya çalışır.
-# Kullanım: toplanti baslat --sozluk sozluk_ornek.txt
-CEPOL
-Europol
-INTERPOL
-Eurojust
-counter-terrorism

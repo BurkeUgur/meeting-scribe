@@ -1,72 +1,74 @@
-# toplanti-takip
+# meeting-scribe
 
-Online toplantıların (Interactio, Zoom, Teams, Webex vb.) sesini **bilgisayarın ses çıkışından** kaydeder ve yazıya döker. Toplantı uygulamasına bağlanmaz, bot eklemez; hoparlöre ne geliyorsa onu kaydeder. Her şey bilgisayarınızda çalışır, ses hiçbir yere gönderilmez.
+[Türkçe](README.tr.md)
 
-- Ses 2 dakikalık parçalar hâlinde kaydedilir. Sessiz parçalar (aralar) kaydedilmez.
-- Yazıya dökme kayıtla eş zamanlı ilerler; transkript her parçada güncellenir.
-- Tüm ses çıkışları aynı anda dinlenir. Toplantı sırasında kulaklık ya da harici hoparlör değiştirseniz de kayıt kesilmez.
-- Çeviri kanalı yerine salon sesi gelirse ve konuşmacı Arapça ya da Fransızca konuşursa, bu kısımlar çok dilli bir modelle orijinal dilinde ayrıca yazıya dökülür.
+Records whatever your computer plays during an online meeting (Interactio, Zoom, Teams, Webex, ...) and transcribes it locally with Whisper. It doesn't join the meeting or add a bot: it captures the audio going to your speakers. Everything runs on your machine; no audio leaves it.
 
-> Yalnızca Windows'ta denendi. Ses çıkışını kaydetmek için `SoundCard` kütüphanesinin loopback desteği kullanılıyor; macOS'te bu desteklenmiyor.
+- Audio is saved in 2-minute chunks. Silent stretches (breaks) are not saved.
+- Transcription runs alongside the recording, and the transcript is updated after every chunk.
+- All audio outputs are captured at once, so switching to headphones or an external speaker mid-meeting doesn't break the recording.
+- If the floor audio comes through instead of the interpretation channel and the speaker uses Arabic or French, those parts are also transcribed in their original language with a multilingual model.
 
-## Kurulum
+> Tested on Windows only. Capturing audio output relies on the loopback support of the `SoundCard` library, which macOS doesn't provide.
 
-Python 3.9 veya üstü gerekir.
+## Install
 
-```
-pip install git+https://github.com/BurkeUgur/toplanti-takip.git
-```
-
-Modeller ilk kullanımda otomatik indirilir: ana dil için `small.en` yaklaşık 500 MB, Arapça/Fransızca için `large-v3` yaklaşık 3 GB.
-
-## Kullanım
+Requires Python 3.9 or newer.
 
 ```
-toplanti cihazlar          # ses çıkışlarını listeler, hangisinden ses geldiğini ölçer
-toplanti baslat            # kaydı ve yazıya dökmeyi arka planda başlatır
-toplanti durum             # ilerlemeyi ve transkriptin son satırlarını gösterir
-toplanti durdur            # kaydı bitirir; yazıya dökme kalanları tamamlayıp kapanır
+pip install git+https://github.com/BurkeUgur/meeting-scribe.git
 ```
 
-Toplantı başlamadan önce `toplanti baslat` demeniz yeterli; sessiz kısımlar kaydedilmediği için erken başlatmanın bir zararı yok. Kayıtlar varsayılan olarak `kayitlar/<tarih>/` klasörüne yazılır.
+Models download automatically on first use: `small.en` for the main language (~500 MB) and `large-v3` for Arabic/French (~3 GB).
 
-Sık kullanılan seçenekler:
+## Usage
 
-| Seçenek | Açıklama |
+```
+scribe devices     # list audio outputs and show which one is playing sound
+scribe start       # start recording and transcription in the background
+scribe status      # show progress and the last lines of the transcript
+scribe stop        # stop recording; transcription finishes the remaining chunks and exits
+```
+
+Run `scribe start` before the meeting begins. Silent stretches aren't saved, so starting early costs nothing. Recordings go to `recordings/<date>/` by default.
+
+Common options for `scribe start`:
+
+| Option | Description |
 |---|---|
-| `--klasor D:\toplanti\gun1` | Kayıt klasörü |
-| `--sozluk sozluk.txt` | Doğru yazılması gereken isim ve kısaltmalar, her satıra bir tane (örnek: `sozluk_ornek.txt`) |
-| `--dil tr --model small` | Ana konuşma dili Türkçe ise. `small.en` yalnızca İngilizce bilir; başka dillerde `small`, `medium` ya da `large-v3` kullanın |
-| `--diger-diller ""` | Arapça/Fransızca dökümü kapatır. Bu döküm yavaştır: 2 dakikalık parça yaklaşık 3-4 dakikada işlenir |
-| `--mikrofon` | Kendi mikrofonunuzu da ayrı kaydeder; transkriptte `BEN` olarak görünür |
-| `--cihaz Hoparlör` | Yalnızca adında bu ifade geçen çıkışı dinler |
+| `--dir D:\meetings\day1` | Recording folder |
+| `--glossary glossary.txt` | Names and acronyms to spell correctly, one per line (see `glossary_example.txt`) |
+| `--lang de --model small` | If the main language isn't English. `small.en` is English-only; for other languages use `small`, `medium` or `large-v3` |
+| `--extra-langs ""` | Turns off the Arabic/French pass. That pass is slow: a 2-minute chunk takes about 3-4 minutes on CPU |
+| `--mic` | Also records your own microphone; it appears as `ME` in the transcript |
+| `--device Speakers` | Only capture the output whose name contains this text |
 
-## Oluşan dosyalar
+## Output files
 
-| Dosya | İçerik |
+| File | Contents |
 |---|---|
-| `transkript.txt` | `[ss:dd:sn] KARŞI TARAF: metin`. Süre, kaydın başlangıcından itibaren sayılır; başlangıç zamanı `baslangic.txt` dosyasında saklanır |
-| `transkript_diger.txt` | Arapça/Fransızca kısımlar, orijinal dilinde |
-| `karsi_XXXX_<sn>.wav` | Ses parçaları |
-| `*_log.txt` | Süreçlerin çıktıları, sorun olursa ilk bakılacak yer |
+| `transcript.txt` | `[hh:mm:ss] REMOTE: text`. Times count from the start of the recording; the start time is stored in `start_time.txt` |
+| `transcript_other.txt` | Arabic/French parts, in the original language |
+| `remote_XXXX_<sec>.wav` | Audio chunks |
+| `*_log.txt` | Output of each background process; the first place to look if something goes wrong |
 
-Süreçler yarıda kesilirse aynı klasörle `toplanti baslat --klasor ...` komutunu yeniden çalıştırın; zaman ekseni ve işlenmiş parçalar korunur.
+If the processes are interrupted, run `scribe start --dir ...` again with the same folder. The timeline and already processed chunks are kept.
 
-## Not alma (Claude Code ile)
+## Taking notes with Claude Code
 
-Transkript ham metindir. Okunabilir notlara çevirmek için toplantı sırasında [Claude Code](https://claude.com/claude-code) açıkken örneğin şunu yazabilirsiniz:
+The transcript is raw text. To turn it into readable notes during the meeting, open [Claude Code](https://claude.com/claude-code) and ask something like:
 
-> `kayitlar/2026-11-10/transkript.txt` dosyasını takip et, yeni satırlar geldikçe oturum ve konuşmacı başlıklarıyla Türkçe notları `notlar.md` dosyasına yaz. Arapça kısımlar `transkript_diger.txt` içinde.
+> Follow `recordings/2026-11-10/transcript.txt`. As new lines arrive, write notes to `notes.md` with headings per session and speaker. Arabic parts are in `transcript_other.txt`.
 
-Gündem PDF'i varsa onu da verin. Konuşmacı adları ve oturum başlıkları böylece daha doğru çıkar.
+If there is an agenda PDF, share it too. Speaker names and session titles come out more accurate that way.
 
-## Bilinen sınırlamalar
+## Known limitations
 
-- Kim konuştu ayrımı yok; tüm uzak ses `KARŞI TARAF` olarak geçer. Konuşmacıyı bağlamdan çıkarmak gerekiyor.
-- Aksanlı İngilizce bazen başka bir dil sanılabilir. Bu yüzden ikinci döküm yalnızca `--diger-diller` ile seçilen dilleri işler.
-- Bilgisayarın ses seviyesi kapalıysa ya da toplantı sekmesi sessize alınmışsa hiçbir şey kaydedilmez. `toplanti cihazlar` ile kontrol edin.
-- Toplantı kaydetmeden önce katılımcıların ve düzenleyicinin onayını almak sizin sorumluluğunuzdadır.
+- There's no speaker separation: all remote audio is labelled `REMOTE`, and speakers have to be inferred from context.
+- Accented English is sometimes detected as another language. That's why the second pass only handles the languages listed in `--extra-langs`.
+- Nothing is recorded if the system volume is muted or the meeting tab is muted. Check with `scribe devices`.
+- You are responsible for getting consent from the participants and the organiser before recording a meeting.
 
-## Lisans
+## License
 
-MIT. Ayrıntılar için [LICENSE](LICENSE) dosyasına bakın.
+MIT. See [LICENSE](LICENSE).

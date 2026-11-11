@@ -1,0 +1,8 @@
+# Names and acronyms likely to come up in the meeting, one per line.
+# The transcription model will try to spell them correctly.
+# Usage: scribe start --glossary glossary_example.txt
+CEPOL
+Europol
+INTERPOL
+Eurojust
+counter-terrorism
